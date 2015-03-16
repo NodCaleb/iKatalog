@@ -1,0 +1,30 @@
+//
+//  iKatalog.pch
+//  iKatalog
+//
+//  Created by Eugene Rozhkov on 20.02.15.
+//  Copyright (c) 2015 Nord Point. All rights reserved.
+//
+
+#ifndef iKatalog_iKatalog_pch
+#define iKatalog_iKatalog_pch
+
+#define USER_ARRAY_KEY @"User data in user defaults"
+
+#define DB_SERVER_ADDRESS @"win-sql.df-webhosting.de:5433\\SQLEXPRESS"
+#define DB_USER_NAME @"winweb7db1"
+#define DB_PASSWORD @"tsp061832"
+#define DB_DATABASE_NAME @"winweb94db2"
+
+#define ASP_APPLICATION_ID @"834F9EAF-B3C0-4FD1-B687-555394BC4E01"
+#define ASP_REQUEST_HANDLER_URL @"http://ikatalog.kz/Customer/MobileAppRequestHandler.aspx"
+
+
+#import <UIKit/UIKit.h>
+#import "SQLClient.h"
+//#import "MSSQLData.h"
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif
