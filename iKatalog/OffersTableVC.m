@@ -9,6 +9,7 @@
 #import "OffersTableVC.h"
 #import "OfferTableViewCell.h"
 #import "OfferSiteVC.h"
+#import "CatalogueSiteVC.h"
 
 @interface OffersTableVC ()
 
@@ -39,11 +40,13 @@
      {
          if (success)
          {
+             NSLog(@"Load started");
              [client execute:@"SELECT * from ma_SpecialOffers order by RecordDate desc" completion:^(NSArray* results)
               {
 //                  [self.spinner stopAnimating];
                   [self loadOffers:results];
                   [client disconnect];
+                  NSLog(@"Load finished");
                   [self.tableView reloadData];
               }];
          }
@@ -181,11 +184,18 @@
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"openOffer"])
+    if ([segue.identifier isEqualToString:@"openOffer"]) //В данный момент не используется
         if ([segue.destinationViewController isKindOfClass:[OfferSiteVC class]])
         {
             OfferTableViewCell *senderCell = (OfferTableViewCell *)sender;
             OfferSiteVC *targetVC = segue.destinationViewController;
+            targetVC.currentOffer = senderCell.cellOffer;
+        }
+    if ([segue.identifier isEqualToString:@"showOfferOnSite"])
+        if ([segue.destinationViewController isKindOfClass:[CatalogueSiteVC class]])
+        {
+            OfferTableViewCell *senderCell = (OfferTableViewCell *)sender;
+            CatalogueSiteVC *targetVC = segue.destinationViewController;
             targetVC.currentOffer = senderCell.cellOffer;
         }
 }

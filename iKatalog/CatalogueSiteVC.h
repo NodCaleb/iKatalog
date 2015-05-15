@@ -10,6 +10,7 @@
 #import "Catalogue.h"
 #import "OrderItem.h"
 #import "AddItemVC.h"
+#import "Offer.h"
 #define ORDER_ITEMS_ARRAY_KEY @"Order items array key"
 
 @interface CatalogueSiteVC : UIViewController <SaveOrderItemProtocol, UIAlertViewDelegate>
@@ -18,5 +19,6 @@
 @property (strong, nonatomic) NSMutableArray *catalogues;
 @property (strong, nonatomic) IBOutlet UIWebView *catalogueWebView;
 @property (strong, nonatomic) OrderItem *currentOrderItem;
+@property (strong, nonatomic) Offer *currentOffer;
 
 @end

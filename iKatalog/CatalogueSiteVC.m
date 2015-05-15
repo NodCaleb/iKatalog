@@ -17,10 +17,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.navigationItem.title = self.currentCatalogue.catalogueName;
-    NSURL *navigationURL = [NSURL URLWithString:self.currentCatalogue.catalogueURL];
+    
+    NSURL *navigationURL;
+    
+    if (self.currentOffer != nil)
+    {
+        self.navigationItem.title = self.currentOffer.articleNameRU;
+        navigationURL = [NSURL URLWithString:self.currentOffer.catalogueURL];
+    }
+    else if (self.currentCatalogue != nil)
+    {
+        self.navigationItem.title = self.currentCatalogue.catalogueName;
+        navigationURL = [NSURL URLWithString:self.currentCatalogue.catalogueURL];
+    }
+    
     NSURLRequest *openNavigationURL = [NSURLRequest requestWithURL:navigationURL];
     [self.catalogueWebView loadRequest:openNavigationURL];
+    
 }
 
 - (void)didReceiveMemoryWarning {
