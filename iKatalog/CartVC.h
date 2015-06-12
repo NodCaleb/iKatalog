@@ -12,7 +12,7 @@
 #import "AddItemVC.h"
 #define ORDER_ITEMS_ARRAY_KEY @"Order items array key"
 
-@interface CartVC : UIViewController <UITableViewDataSource, UITableViewDelegate, SQLClientDelegate, SaveOrderItemProtocol>
+@interface CartVC : UIViewController <UITableViewDataSource, UITableViewDelegate, NSURLConnectionDelegate, SaveOrderItemProtocol>
 @property (strong, nonatomic) IBOutlet UITableView *cartTableView;
 @property (strong, nonatomic) NSMutableArray *orderItems;
 @property (strong, nonatomic) NSMutableArray *catalogues;

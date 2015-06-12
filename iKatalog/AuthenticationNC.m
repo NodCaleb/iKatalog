@@ -28,8 +28,9 @@
 
 - (void) checkLogin
 {
-    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
-    if (userDataArray) [self performSegueWithIdentifier:@"showAccountVC" sender:self];
+//    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
+    NSDictionary *userDataDictionary = [[NSUserDefaults standardUserDefaults] dictionaryForKey:USER_DICTIONARY_KEY];
+    if (userDataDictionary) [self performSegueWithIdentifier:@"showAccountVC" sender:self];
     else [self performSegueWithIdentifier:@"showLoginVC" sender:self];
 }
 

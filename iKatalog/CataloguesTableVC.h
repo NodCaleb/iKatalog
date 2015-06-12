@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Catalogue.h"
 
-@interface CataloguesTableVC : UITableViewController <SQLClientDelegate>
+@interface CataloguesTableVC : UITableViewController <NSURLConnectionDelegate>
 
 //@property (strong, nonatomic) MSSQLData *dataSourceSQL;
 @property (strong, nonatomic) NSMutableArray *catalogues;

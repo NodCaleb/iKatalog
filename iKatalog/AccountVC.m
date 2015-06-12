@@ -29,8 +29,9 @@
 
 - (NSString *)getUserName;
 {
-    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
-    NSDictionary *userDataDictionary = [userDataArray objectAtIndex:0];
+//    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
+    NSDictionary *userDataDictionary = [[NSUserDefaults standardUserDefaults] dictionaryForKey:USER_DICTIONARY_KEY];
+//    NSDictionary *userDataDictionary = [userDataArray objectAtIndex:0];
     return [NSString stringWithFormat:@"%@", userDataDictionary[@"FullName"]];
 }
 

@@ -7,8 +7,12 @@
 //
 
 #import "CartVC.h"
+#import "APIHandlers.h"
+#import "XMLReader.h"
 
 @interface CartVC ()
+
+@property (nonatomic) NSMutableData *responseData;
 
 @end
 
@@ -36,6 +40,17 @@
     return _orderItems;
 }
 
+@synthesize responseData = _responseData;
+
+- (NSMutableData *)responseData
+{
+    if (!_responseData)
+    {
+        _responseData = [[NSMutableData alloc] init];
+    }
+    return _responseData;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -45,33 +60,7 @@
     [self.spinner setHidesWhenStopped:YES];
     [self.spinner startAnimating];
     
-    SQLClient* client = [SQLClient sharedInstance];
-    client.delegate = self;
-    
-    [client connect:@"win-sql.df-webhosting.de:5433\\SQLEXPRESS" username:@"winweb7db1" password:@"tsp061832" database:@"winweb94db1" completion:^(BOOL success)
-     {
-         if (success)
-         {
-             [client execute:@"SELECT * from ma_CataloguesView order by SortOrder, CatalogueName" completion:^(NSArray* results)
-              {
-                  [self.spinner stopAnimating];
-                  self.addItemButton.enabled = YES;
-                  [self loadCatalogues:results];
-                  [client disconnect];
-                  [self loadCartItems];
-                  
-                  
-                  [self.cartTableView reloadData];
-              }];
-         }
-         else
-             [self.spinner stopAnimating];
-     }];
-
-    
-
-    
-    
+    [self requestCataloguesDictionary];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -79,14 +68,12 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void) loadCatalogues:(NSArray *)data
+- (void)viewDidLayoutSubviews
 {
-    for (NSArray* table in data)
-        for (NSDictionary* row in table)
-        {
-            [self.catalogues addObject:[[Catalogue alloc] initWithData:row]];
-        }
-    
+    [super viewDidLayoutSubviews];
+    CGRect rect = self.navigationController.navigationBar.frame;
+    float y = rect.size.height + rect.origin.y;
+    self.cartTableView.contentInset = UIEdgeInsetsMake(y ,0,0,0);
 }
 
 -(void) loadCartItems
@@ -103,7 +90,67 @@
 
 - (IBAction)arrangeOrderButtonPressed:(id)sender
 {
+//    NSError *error;
+//    
+//    NSMutableArray *ordersArray = [@[] mutableCopy];
+//    
+//    for (OrderItem *currentItem in self.orderItems)
+//    {
+//        [ordersArray addObject:[currentItem dictinaryFromOrderItem]];
+//    }
+//    
+//    NSDictionary *userDataDictionary = [[NSUserDefaults standardUserDefaults] dictionaryForKey:USER_DICTIONARY_KEY];
+//    
+//    if ([NSJSONSerialization isValidJSONObject:ordersArray] && userDataDictionary)
+//    {
+//        NSData *newJsonData = [NSJSONSerialization dataWithJSONObject:ordersArray options:NSJSONWritingPrettyPrinted error:&error];
+//        
+//        NSString *orderContentString;
+//        if (! newJsonData) {
+//            NSLog(@"Got an error: %@", error);
+//        } else {
+//            orderContentString = [[NSString alloc] initWithData:newJsonData encoding:NSUTF8StringEncoding];
+//        }
+//        int customerId = [userDataDictionary[@"Customer_id"] integerValue];
+//        [self requestArrangeOrderWithContent:orderContentString forCustomer:customerId];
+//    }
+    [self performSegueWithIdentifier:@"showCheckout" sender:nil];
+}
+
+- (void)requestCataloguesDictionary
+{
+    [self.responseData setLength:0];
+    NSString *post = [NSString stringWithFormat: @"action=getCatalogues&appId=%@", ASP_APPLICATION_ID];
+    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
     
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init] ;
+    [request setURL:[NSURL URLWithString:ASP_REQUEST_HANDLER_URL]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setTimeoutInterval:20.0];
+    [request setHTTPBody:postData];
+    
+    [NSURLConnection connectionWithRequest:request delegate:self];
+}
+
+- (void)requestArrangeOrderWithContent:(NSString*) orderContent forCustomer:(int)customerId
+{
+    [self.responseData setLength:0];
+    NSString *post = [NSString stringWithFormat: @"action=arrangeOrder&appId=%@&orderContent=%@&customer=%i", ASP_APPLICATION_ID, orderContent, customerId];
+    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init] ;
+    [request setURL:[NSURL URLWithString:ASP_REQUEST_HANDLER_URL]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setTimeoutInterval:20.0];
+    [request setHTTPBody:postData];
+    
+    [NSURLConnection connectionWithRequest:request delegate:self];
 }
 
 #pragma mark — UITableViewDataSource
@@ -144,20 +191,42 @@
 
 
 
-#pragma mark - SQLClientDelegate
-
-//Required
-- (void)error:(NSString*)error code:(int)code severity:(int)severity
+#pragma mark NSURLConnection Delegate Methods
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    if (code == 20042) return; //Ошибка, которую можно игнорировать, ибо она каждый раз вылезает, но соединение все-равно работает
-    NSLog(@"Error #%d: %@ (Severity %d)", code, error, severity);
-    [[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    //    _responseData = [[NSMutableData alloc] init];
 }
 
-//Optional
-- (void)message:(NSString*)message
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    NSLog(@"Message: %@", message);
+    [self.responseData appendData:data];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse*)cachedResponse
+{
+    return nil;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSError * error = nil;
+    NSDictionary *responseDictionary = [XMLReader dictionaryForXMLData:self.responseData error:&error];
+    
+    NSString *responseType = [APIHandlers getResponseType:responseDictionary];
+    if ([responseType isEqualToString:@"catalogues"])
+    {
+        self.catalogues = [APIHandlers processCataloguesDictionary:responseDictionary];
+        [self loadCartItems];
+        [self.cartTableView reloadData];
+        self.addItemButton.enabled = YES;
+        [self.spinner stopAnimating];
+    }
+    
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"Connection error");
 }
 
 #pragma mark — SaveOrderItem methods

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE130B8C1B2A216A0052FEA0 /* DeliveryPickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE130B8B1B2A216A0052FEA0 /* DeliveryPickerVC.m */; };
+		DE130B8F1B2A2E5A0052FEA0 /* paymentPickerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE130B8E1B2A2E5A0052FEA0 /* paymentPickerVC.m */; };
 		DE156E7A1A98C505000D1052 /* CatalogueSiteVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE156E791A98C505000D1052 /* CatalogueSiteVC.m */; };
 		DE156E7D1A98C518000D1052 /* CatalogueDetailsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE156E7C1A98C518000D1052 /* CatalogueDetailsVC.m */; };
 		DE156E801A98C582000D1052 /* Catalogue.m in Sources */ = {isa = PBXBuildFile; fileRef = DE156E7F1A98C582000D1052 /* Catalogue.m */; };
@@ -42,6 +44,7 @@
 		DE9C90B71A97979800CB4A8D /* MSSQLData.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9C90B61A97979800CB4A8D /* MSSQLData.m */; };
 		DE9C90BA1A97C5AE00CB4A8D /* LogoPlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = DE9C90B91A97C5AE00CB4A8D /* LogoPlaceholder.png */; };
 		DE9F5FDA1AACB1620020DC11 /* CartVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9F5FD91AACB1620020DC11 /* CartVC.m */; };
+		DECB4E481B1CEBB000786758 /* APIHandlers.m in Sources */ = {isa = PBXBuildFile; fileRef = DECB4E471B1CEBB000786758 /* APIHandlers.m */; };
 		DED1ED7D1AAB5CCE00BFB354 /* OrderItem.m in Sources */ = {isa = PBXBuildFile; fileRef = DED1ED7C1AAB5CCE00BFB354 /* OrderItem.m */; };
 		DED1ED831AAB77C100BFB354 /* AddItemVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DED1ED821AAB77C100BFB354 /* AddItemVC.m */; };
 		DEFE5A151A9BA46B00F63BDA /* OffersTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEFE5A141A9BA46B00F63BDA /* OffersTableVC.m */; };
@@ -63,6 +66,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DE130B8A1B2A216A0052FEA0 /* DeliveryPickerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeliveryPickerVC.h; sourceTree = "<group>"; };
+		DE130B8B1B2A216A0052FEA0 /* DeliveryPickerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeliveryPickerVC.m; sourceTree = "<group>"; };
+		DE130B8D1B2A2E5A0052FEA0 /* paymentPickerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = paymentPickerVC.h; sourceTree = "<group>"; };
+		DE130B8E1B2A2E5A0052FEA0 /* paymentPickerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = paymentPickerVC.m; sourceTree = "<group>"; };
 		DE156E781A98C505000D1052 /* CatalogueSiteVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatalogueSiteVC.h; sourceTree = "<group>"; };
 		DE156E791A98C505000D1052 /* CatalogueSiteVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CatalogueSiteVC.m; sourceTree = "<group>"; };
 		DE156E7B1A98C518000D1052 /* CatalogueDetailsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CatalogueDetailsVC.h; sourceTree = "<group>"; };
@@ -140,6 +147,8 @@
 		DE9C90B91A97C5AE00CB4A8D /* LogoPlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LogoPlaceholder.png; sourceTree = "<group>"; };
 		DE9F5FD81AACB1620020DC11 /* CartVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartVC.h; sourceTree = "<group>"; };
 		DE9F5FD91AACB1620020DC11 /* CartVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CartVC.m; sourceTree = "<group>"; };
+		DECB4E461B1CEBB000786758 /* APIHandlers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APIHandlers.h; sourceTree = "<group>"; };
+		DECB4E471B1CEBB000786758 /* APIHandlers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APIHandlers.m; sourceTree = "<group>"; };
 		DED1ED7B1AAB5CCE00BFB354 /* OrderItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderItem.h; sourceTree = "<group>"; };
 		DED1ED7C1AAB5CCE00BFB354 /* OrderItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderItem.m; sourceTree = "<group>"; };
 		DED1ED811AAB77C100BFB354 /* AddItemVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddItemVC.h; sourceTree = "<group>"; };
@@ -364,6 +373,8 @@
 			children = (
 				DE9C90B51A97979800CB4A8D /* MSSQLData.h */,
 				DE9C90B61A97979800CB4A8D /* MSSQLData.m */,
+				DECB4E461B1CEBB000786758 /* APIHandlers.h */,
+				DECB4E471B1CEBB000786758 /* APIHandlers.m */,
 			);
 			name = Data;
 			sourceTree = "<group>";
@@ -377,6 +388,10 @@
 				DED1ED821AAB77C100BFB354 /* AddItemVC.m */,
 				DE9F5FD81AACB1620020DC11 /* CartVC.h */,
 				DE9F5FD91AACB1620020DC11 /* CartVC.m */,
+				DE130B8A1B2A216A0052FEA0 /* DeliveryPickerVC.h */,
+				DE130B8B1B2A216A0052FEA0 /* DeliveryPickerVC.m */,
+				DE130B8D1B2A2E5A0052FEA0 /* paymentPickerVC.h */,
+				DE130B8E1B2A2E5A0052FEA0 /* paymentPickerVC.m */,
 			);
 			name = Orders;
 			sourceTree = "<group>";
@@ -501,6 +516,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEFE5A231A9BC57D00F63BDA /* OfferSiteVC.m in Sources */,
+				DE130B8F1B2A2E5A0052FEA0 /* paymentPickerVC.m in Sources */,
 				DE9C90B71A97979800CB4A8D /* MSSQLData.m in Sources */,
 				DE9C908E1A939C5300CB4A8D /* UIViewController+AMSlideMenu.m in Sources */,
 				DEFE5A191A9BA49800F63BDA /* OfferTableViewCell.m in Sources */,
@@ -509,6 +525,7 @@
 				DE156E831A98CCCC000D1052 /* CatalogueTableViewCell.m in Sources */,
 				DE9C90881A939C5300CB4A8D /* AMSlideMenuContentSegue.m in Sources */,
 				DEFE5A151A9BA46B00F63BDA /* OffersTableVC.m in Sources */,
+				DECB4E481B1CEBB000786758 /* APIHandlers.m in Sources */,
 				DE8F60091AAF82C60041F1FD /* AuthenticationNC.m in Sources */,
 				DE9C90551A939C0500CB4A8D /* AppDelegate.m in Sources */,
 				DE9C90991A939EBF00CB4A8D /* MenuData.m in Sources */,
@@ -521,6 +538,7 @@
 				DE156E7D1A98C518000D1052 /* CatalogueDetailsVC.m in Sources */,
 				DE9C90AC1A97952800CB4A8D /* SQLClient.m in Sources */,
 				DE9C90961A939DCC00CB4A8D /* LeftTableVC.m in Sources */,
+				DE130B8C1B2A216A0052FEA0 /* DeliveryPickerVC.m in Sources */,
 				DE9C90921A939D2E00CB4A8D /* MainVC.m in Sources */,
 				DE9C90891A939C5300CB4A8D /* AMSlideMenuLeftMenuSegue.m in Sources */,
 				DE8F600F1AAF93F20041F1FD /* RegisterVC.m in Sources */,

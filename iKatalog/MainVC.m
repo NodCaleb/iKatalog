@@ -73,7 +73,7 @@
 
 - (NSIndexPath *)initialIndexPathForLeftMenu
 {
-    return [NSIndexPath indexPathForRow:4 inSection:0];
+    return [NSIndexPath indexPathForRow:0 inSection:0];
 }
 
 @end

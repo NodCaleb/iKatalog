@@ -10,6 +10,7 @@
 #define iKatalog_iKatalog_pch
 
 #define USER_ARRAY_KEY @"User data in user defaults"
+#define USER_DICTIONARY_KEY @"User dictionary in user defaults"
 
 #define DB_SERVER_ADDRESS @"win-sql.df-webhosting.de:5433\\SQLEXPRESS"
 #define DB_USER_NAME @"winweb7db1"

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LoginVC : UIViewController <SQLClientDelegate>
+@interface LoginVC : UIViewController <SQLClientDelegate, NSURLConnectionDelegate>
 
 @property (strong, nonatomic) IBOutlet UITextField *loginTextField;
 @property (strong, nonatomic) IBOutlet UITextField *passTextField;

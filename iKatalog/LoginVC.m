@@ -8,12 +8,26 @@
 
 #import "LoginVC.h"
 #import "AuthenticationNC.h"
+#import "XMLReader.h"
 
 @interface LoginVC ()
+
+@property (nonatomic) NSMutableData *responseData;
 
 @end
 
 @implementation LoginVC
+
+@synthesize responseData = _responseData;
+
+- (NSMutableData *)responseData
+{
+    if (!_responseData)
+    {
+        _responseData = [[NSMutableData alloc] init];
+    }
+    return _responseData;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -41,30 +55,46 @@
 - (IBAction)loginButtonPressed:(id)sender
 {
     [self.spinner startAnimating];
-    NSString *requestString = [NSString stringWithFormat:@"select * from ma_Users where Password = '%@' and (UserName = LOWER('%@') or Email = LOWER('%@'))", self.passTextField.text, self.loginTextField.text, self.loginTextField.text];
-    self.loginTextField.text = @"";
-    self.passTextField.text = @"";
-    SQLClient* client = [SQLClient sharedInstance];
-    client.delegate = self;
-    [client connect:@"win-sql.df-webhosting.de:5433\\SQLEXPRESS" username:@"winweb7db1" password:@"tsp061832" database:@"winweb94db2" completion:^(BOOL success)
-     {
-         if (success)
-         {
-             [client execute:requestString completion:^(NSArray* results)
-              {
-                  [self.spinner stopAnimating];
-                  [self authenticateUser:results];
-                  [client disconnect];
-                  if ([self checkUser]) [self performLogin];
-                  else
-                  {
-                      UIAlertView *cartAlert = [[UIAlertView alloc] initWithTitle:@"Ошибка!" message:@"Неверное имя пользователя или пароль." delegate:nil cancelButtonTitle:@"ОК" otherButtonTitles: nil];
-                      [cartAlert show];
-                  }
-              }];
-         }
-         else [self.spinner stopAnimating];
-     }];
+    
+    NSString *post = [NSString stringWithFormat: @"action=login&appId=%@&userName=%@&password=%@", ASP_APPLICATION_ID, self.loginTextField.text, self.passTextField.text];
+    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init] ;
+    [request setURL:[NSURL URLWithString:ASP_REQUEST_HANDLER_URL]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setTimeoutInterval:20.0];
+    [request setHTTPBody:postData];
+    
+    [NSURLConnection connectionWithRequest:request delegate:self];
+    
+}
+
+- (void)processResponseDictionary:(NSDictionary *)responseDicrionary
+{
+    NSDictionary *firstLevelDictionary = responseDicrionary[@"response"];
+    NSDictionary *resultDictionary = firstLevelDictionary[@"result"];
+    NSDictionary *userDictionary = firstLevelDictionary[@"user"];
+    //    NSLog(@"%@", resultDictionary);
+    int resultCode = [resultDictionary[@"text"] integerValue];
+    if (resultCode == 0)
+    {
+        [[NSUserDefaults standardUserDefaults] setObject:userDictionary forKey:USER_DICTIONARY_KEY];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        if ([self checkUser]) [self performLogin];
+    }
+    else if (resultCode == 6)
+    {
+        UIAlertView *cartAlert = [[UIAlertView alloc] initWithTitle:@"Ошибка!" message:@"Неверное имя пользователя или пароль." delegate:nil cancelButtonTitle:@"ОК" otherButtonTitles: nil];
+        [cartAlert show];
+    }
+    else if (resultCode == 5)
+    {
+        UIAlertView *cartAlert = [[UIAlertView alloc] initWithTitle:@"Ошибка!" message:@"Ошибка связи, пожалуйста, попробуйте позже." delegate:nil cancelButtonTitle:@"ОК" otherButtonTitles: nil];
+        [cartAlert show];
+    }
 }
 
 - (void) authenticateUser:(NSArray *)data
@@ -83,8 +113,9 @@
 
 - (BOOL) checkUser
 {
-    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
-    if (userDataArray) return YES;
+//    NSArray *userDataArray = [[NSUserDefaults standardUserDefaults] arrayForKey:USER_ARRAY_KEY];
+    NSDictionary *userDataDictionary = [[NSUserDefaults standardUserDefaults] dictionaryForKey:USER_DICTIONARY_KEY];
+    if (userDataDictionary) return YES;
     else return NO;
 }
 
@@ -99,20 +130,33 @@
     [self performSegueWithIdentifier:@"showRegisterForm" sender:self];
 }
 
-#pragma mark - SQLClientDelegate
 
-//Required
-- (void)error:(NSString*)error code:(int)code severity:(int)severity
+#pragma mark NSURLConnection Delegate Methods
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    if (code == 20042) return; //Ошибка, которую можно игнорировать, ибо она каждый раз вылезает, но соединение все-равно работает
-    NSLog(@"Error #%d: %@ (Severity %d)", code, error, severity);
-    [[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+        _responseData = [[NSMutableData alloc] init];
 }
 
-//Optional
-- (void)message:(NSString*)message
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    NSLog(@"Message: %@", message);
+    [self.responseData appendData:data];
+}
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse*)cachedResponse
+{
+    return nil;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSError * error = nil;
+    NSDictionary *responseDictionary = [XMLReader dictionaryForXMLData:self.responseData error:&error];
+    [self processResponseDictionary:responseDictionary];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"Connection error");
 }
 
 @end

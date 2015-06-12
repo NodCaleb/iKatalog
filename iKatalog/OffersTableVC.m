@@ -10,8 +10,11 @@
 #import "OfferTableViewCell.h"
 #import "OfferSiteVC.h"
 #import "CatalogueSiteVC.h"
+#import "XMLReader.h"
 
 @interface OffersTableVC ()
+
+@property (nonatomic) NSMutableData *responseData;
 
 @end
 
@@ -28,31 +31,25 @@
     return _offers;
 }
 
+@synthesize responseData = _responseData;
+
+- (NSMutableData *)responseData
+{
+    if (!_responseData)
+    {
+        _responseData = [[NSMutableData alloc] init];
+    }
+    return _responseData;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    [self.spinner setHidesWhenStopped:YES];
-//    [self.spinner startAnimating];
-	   
-    SQLClient* client = [SQLClient sharedInstance];
-    client.delegate = self;
-    [client connect:@"win-sql.df-webhosting.de:5433\\SQLEXPRESS" username:@"winweb7db1" password:@"tsp061832" database:@"winweb94db1" completion:^(BOOL success)
-     {
-         if (success)
-         {
-             NSLog(@"Load started");
-             [client execute:@"SELECT * from ma_SpecialOffers order by RecordDate desc" completion:^(NSArray* results)
-              {
-//                  [self.spinner stopAnimating];
-                  [self loadOffers:results];
-                  [client disconnect];
-                  NSLog(@"Load finished");
-                  [self.tableView reloadData];
-              }];
-         }
-//         else
-//             [self.spinner stopAnimating];
-     }];
+    [self.spinner setHidesWhenStopped:YES];
+    [self.spinner startAnimating];
+    
+    [self requestOffersDictionary];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -69,17 +66,49 @@
         }
 }
 
+- (void)requestOffersDictionary
+{
+    [self.responseData setLength:0];
+    NSString *post = [NSString stringWithFormat: @"action=getOffers&appId=%@", ASP_APPLICATION_ID];
+    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];
+    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init] ;
+    [request setURL:[NSURL URLWithString:ASP_REQUEST_HANDLER_URL]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setTimeoutInterval:20.0];
+    [request setHTTPBody:postData];
+    
+    [NSURLConnection connectionWithRequest:request delegate:self];
+}
+
+- (NSMutableArray *)processOffersDictionary:(NSDictionary *)responseDicrionary
+{
+    NSMutableArray *allTheOfferArray = [@[] mutableCopy];
+    
+    NSDictionary *firstLevelDictionary = responseDicrionary[@"response"];
+    NSDictionary *resultDictionary = firstLevelDictionary[@"offers"];
+    NSArray *offerArray = resultDictionary[@"offer"];
+    for (NSDictionary *offerData in offerArray)
+    {
+        Offer *newOffer =[[Offer alloc] initWithData:offerData];
+        [allTheOfferArray addObject:newOffer];
+    }
+    
+    return allTheOfferArray;
+}
+
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return [self.offers count];
 }
 
@@ -200,21 +229,36 @@
         }
 }
 
-#pragma mark - SQLClientDelegate
-
-//Required
-- (void)error:(NSString*)error code:(int)code severity:(int)severity
+#pragma mark NSURLConnection Delegate Methods
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
-    if (code == 20042) return; //Ошибка, которую можно игнорировать, ибо она каждый раз вылезает, но соединение все-равно работает
-    NSLog(@"Error #%d: %@ (Severity %d)", code, error, severity);
-    [[[UIAlertView alloc] initWithTitle:@"Error" message:error delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    //    _responseData = [[NSMutableData alloc] init];
 }
 
-//Optional
-- (void)message:(NSString*)message
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    NSLog(@"Message: %@", message);
+    [self.responseData appendData:data];
 }
+
+- (NSCachedURLResponse *)connection:(NSURLConnection *)connection willCacheResponse:(NSCachedURLResponse*)cachedResponse
+{
+    return nil;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    NSError * error = nil;
+    NSDictionary *responseDictionary = [XMLReader dictionaryForXMLData:self.responseData error:&error];
+    self.offers = [self processOffersDictionary: responseDictionary];
+    [self.tableView reloadData];
+    [self.spinner stopAnimating];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    NSLog(@"Connection error");
+}
+
 
 
 @end
